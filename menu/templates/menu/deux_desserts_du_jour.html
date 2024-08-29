@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deux Desserts du Jour</title>
+</head>
+<body>
+    <h1>Deux Desserts du Jour</h1>
+
+    <ul>
+    {% for dessert in deux_desserts %}
+        <li>
+            <h2>{{ dessert.nom }}</h2>
+            <p><strong>Flavors:</strong> {{ dessert.flavors }}</p>
+            <p><strong>Rating:</strong> {{ dessert.rating }}</p>
+            <p><strong>Success Rate:</strong> {{ dessert.success }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

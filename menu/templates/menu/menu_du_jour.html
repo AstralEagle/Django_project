@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Menu du Jour</title>
+</head>
+<body>
+    <h1>Menu du Jour</h1>
+
+    <h2>Plats</h2>
+    <ul>
+    {% for plat in deux_plats %}
+        <li>
+            <h3>{{ plat.nom }} - {{ plat.prix }}€</h3>
+            <p>{{ plat.description }}</p>
+            <p><strong>Cuisine:</strong> {{ plat.cuisine }}</p>
+            <p><strong>Course:</strong> {{ plat.course }}</p>
+            <p><strong>Diet:</strong> {{ plat.diet }}</p>
+            <p><strong>Prep Time:</strong> {{ plat.prep_time }}</p>
+            <p><strong>Ingredients:</strong> {{ plat.ingredients }}</p>
+            <p><strong>Instructions:</strong> {{ plat.instructions }}</p>
+            <img src="{{ plat.image_url }}" alt="{{ plat.nom }}" style="max-width: 400px;">
+        </li>
+    {% endfor %}
+    </ul>
+
+    <h2>Desserts</h2>
+    <ul>
+    {% for dessert in deux_desserts %}
+        <li>
+            <h3>{{ dessert.nom }} - {{ dessert.prix }}€</h3>
+            <p><strong>Flavors:</strong> {{ dessert.flavors }}</p>
+            <p><strong>Rating:</strong> {{ dessert.rating }}</p>
+            <p><strong>Success Rate:</strong> {{ dessert.success }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

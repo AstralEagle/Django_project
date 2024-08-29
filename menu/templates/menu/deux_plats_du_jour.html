@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deux Plats du Jour</title>
+</head>
+<body>
+    <h1>Deux Plats du Jour</h1>
+
+    <ul>
+    {% for plat in deux_plats %}
+        <li>
+            <h2>{{ plat.nom }}</h2>
+            <p>{{ plat.description }}</p>
+            <p><strong>Cuisine:</strong> {{ plat.cuisine }}</p>
+            <p><strong>Course:</strong> {{ plat.course }}</p>
+            <p><strong>Diet:</strong> {{ plat.diet }}</p>
+            <p><strong>Prep Time:</strong> {{ plat.prep_time }}</p>
+            <p><strong>Ingredients:</strong> {{ plat.ingredients }}</p>
+            <p><strong>Instructions:</strong> {{ plat.instructions }}</p>
+            <img src="{{ plat.image_url }}" alt="{{ plat.nom }}" style="max-width: 400px;">
+        </li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

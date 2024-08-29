@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-s$06oq_@_c2=9pto44d=duh(t=_k&2-ur&^c&lh65*&$&811g8'
+SECRET_KEY = 'django-insecure-su+89^kt0(u_ozw_#b^&1oci%fs+#e@s3)(6blli((zb@8!)g6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'menu',
 ]
 
 MIDDLEWARE = [
@@ -75,10 +76,15 @@ WSGI_APPLICATION = 'django_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'startup_menu',
+        'USER': 'user_startup_menu',
+        'PASSWORD': 'new_password',
+        'HOST': 'localhost',  # ou l'adresse IP si PostgreSQL est sur un autre serveur
+        'PORT': '5432',        # Le port par défaut de PostgreSQL
     }
 }
+
 
 
 # Password validation

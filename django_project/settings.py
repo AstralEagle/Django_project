@@ -40,7 +40,11 @@ INSTALLED_APPS = [
     'menu',
     'accounts',
     'rest_framework',
+<<<<<<< HEAD
     'rest_framework.authtoken',
+=======
+    'delivery',
+>>>>>>> 0a37d79baf87b010f3a6227b41e8cf4897f457e8
 ]
 
 AUTH_USER_MODEL = 'accounts.MyUser'

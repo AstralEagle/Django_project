@@ -1,3 +1,7 @@
+pip install geopy
+pip install django djangorestframework
+
+
 1-settting bdd
 mettre ses propros setting pour la bdd 
 

@@ -4,20 +4,20 @@ import useMenus from "../hook/useMenus.js";
 import useMyMenus from "../hook/useMyMenus.js";
 
 const Plat = ({plat, addToMyMenu}) => {
-    return (<Box className="flex flex-col cursor-pointer" onClick={() => addToMyMenu(addToMyMenu)}>
-        <Box className="flex justify-between items-center">
+    return (<Box className="flex flex-col cursor-pointer w-[337px]" onClick={() => addToMyMenu(addToMyMenu)}>
+        <Box className="flex justify-between items-center gap-2">
             <Typography>
                 {plat.name}
             </Typography>
             <Typography>
-                {plat.price} €
+                {plat.price}€
             </Typography>
         </Box>
         <img
             src={plat.image}
             alt="Image du plat"
             style={{
-                width: "337px", height: "200px"
+                width: "337px", height: "180px"
             }}
         />
     </Box>)
@@ -37,21 +37,21 @@ function Menu() {
 
     return (
         <Box className="max-w-[1400px] p-2">
-        <Typography fontSize={48} fontWeight={800}>
+        <Typography fontSize={48} fontWeight={800} lineHeight="48px">
             Plat
         </Typography>
         <Box className="flex flex-col md:flex-row  gap-3">
             {menus.map((plat, i) => (<Plat key={i} plat={plat} addToMyMenu={() => addPlat(plat)}/>))}
         </Box>
-        <Typography fontSize={48} fontWeight={800}>
+            <Typography fontSize={48} fontWeight={800} lineHeight="48px">
             Dessert
         </Typography>
         <Box className="flex flex-col md:flex-row  gap-3">
             {desserts.map((plat, i) => (<Plat key={i} plat={plat} addToMyMenu={() => addPlat(plat)}/>))}
         </Box>
         <Box className="flex flex-col mt-4">
-            <Typography fontSize={48} fontWeight={800}>
-                Total
+            <Typography fontSize={48} fontWeight={800} lineHeight="48px">
+0                Total
             </Typography>
             <Box className="flex gap-4 flex-col md:flex-row">
                 <Box className="flex flex-col flex-1 gap-2">

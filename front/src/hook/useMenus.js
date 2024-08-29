@@ -1,9 +1,7 @@
 import {useEffect, useState} from "react";
+import axios from "axios";
 
-const defaultPlat1 = {id: 0, name: "Plat_1", price: 14.15, image: "https://resize-elle.ladmedia.fr/rcrop/638,,forcex/img/var/plain_site/storage/images/elle-a-table/les-dossiers-de-la-redaction/dossier-de-la-redac/plat-familial-sans-four/97674744-2-fre-FR/15-recettes-de-plats-familiaux-sans-four.jpg"}
-const defaultPlat2 = {id: 1, name: "Plat_2", price: 14.15, image: "https://resize-elle.ladmedia.fr/rcrop/638,,forcex/img/var/plain_site/storage/images/elle-a-table/les-dossiers-de-la-redaction/dossier-de-la-redac/plat-familial-sans-four/97674744-2-fre-FR/15-recettes-de-plats-familiaux-sans-four.jpg"}
-const defaultDessert1 = {id: 3, name: "Dessert_1", price: 14.15, image: "https://resize-elle.ladmedia.fr/rcrop/638,,forcex/img/var/plain_site/storage/images/elle-a-table/les-dossiers-de-la-redaction/dossier-de-la-redac/plat-familial-sans-four/97674744-2-fre-FR/15-recettes-de-plats-familiaux-sans-four.jpg"}
-const defaultDessert2 = {id: 4, name: "Dessert_2", price: 14.15, image: "https://resize-elle.ladmedia.fr/rcrop/638,,forcex/img/var/plain_site/storage/images/elle-a-table/les-dossiers-de-la-redaction/dossier-de-la-redac/plat-familial-sans-four/97674744-2-fre-FR/15-recettes-de-plats-familiaux-sans-four.jpg"}
+const defaultImage = "https://media.istockphoto.com/id/497959594/fr/photo/des-g%C3%A2teaux.jpg?s=612x612&w=0&k=20&c=NY1Jnj-x55j4nNzACA-7wIhQuMifw-5Db7GNei09opM="
 
 const useMenus = () => {
     const [menus, setMenus] = useState([]);
@@ -12,8 +10,9 @@ const useMenus = () => {
     useEffect(() => {
         (async () => {
             try {
-                await setMenus([defaultPlat1, defaultPlat2]);
-                await setDesserts([defaultDessert1, defaultDessert2]);
+                const response = await axios.get("http://localhost:8000/api/menu-du-jour/")
+                await setMenus(response.data.plats.map(x => ({id: x.id, name: x.nom, price: x.prix, image: x.image_url})));
+                await setDesserts(response.data.plats.map(x => ({id: x.id, name: x.nom, price: x.prix, image: defaultImage})));
             }
             catch(e) {
                 console.error(e)

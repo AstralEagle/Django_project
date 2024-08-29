@@ -1,6 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserCreationForm, UserLoginForm, AdresseForm
+from rest_framework import generics, permissions
+from rest_framework.response import Response
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from .serializers import UserSerializer, UserWithAdresseSerializer, AdresseSerializer
+from django.contrib.auth import get_user_model
 
 def register_view(request):
     if request.method == 'POST':
@@ -46,3 +52,29 @@ def ajout_adresse(request):
         form = AdresseForm()
     return render(request, 'accounts/ajout_adresse.html', {'form': form})
 
+User = get_user_model()
+
+class RegisterAPIView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        user = response.data
+        token, created = Token.objects.get_or_create(user=User.objects.get(id=user['id']))
+        return Response({'user': user, 'token': token.key})
+
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        token = response.data['token']
+        user = User.objects.get(auth_token=token)
+        return Response({'token': token, 'user': UserWithAdresseSerializer(user).data})
+
+class UserProfileAPIView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserWithAdresseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

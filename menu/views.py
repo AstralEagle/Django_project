@@ -5,6 +5,10 @@ from django.utils import timezone
 from django.db import models
 from .models import Commande, CommandePlat, CommandeDessert
 from .forms import CommandePlatForm, CommandeDessertForm
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import PlatDisponibleSerializer, DessertDisponibleSerializer, CommandeSerializer
 
 def deux_plats_du_jour(request):
     plats_disponibles = list(PlatDisponible.objects.all())
@@ -124,3 +128,38 @@ def passer_commande(request):
 
 def confirmation_commande(request):
     return render(request, 'menu/confirmation_commande.html')
+
+class MenuDuJourAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        today = timezone.now().date()
+        menu_du_jour = MenuDuJour.objects.filter(date=today).first()
+
+        if not menu_du_jour:
+            plats_disponibles = list(PlatDisponible.objects.all())
+            desserts_disponibles = list(DessertDisponible.objects.all())
+            
+            if len(plats_disponibles) >= 2 and len(desserts_disponibles) >= 2:
+                deux_plats = random.sample(plats_disponibles, 2)
+                deux_desserts = random.sample(desserts_disponibles, 2)
+                
+                menu_du_jour = MenuDuJour.objects.create(date=today)
+                menu_du_jour.plats.set(deux_plats)
+                menu_du_jour.desserts.set(deux_desserts)
+                menu_du_jour.save()
+        
+        deux_plats = menu_du_jour.plats.all()
+        deux_desserts = menu_du_jour.desserts.all()
+
+        plats_serializer = PlatDisponibleSerializer(deux_plats, many=True)
+        desserts_serializer = DessertDisponibleSerializer(deux_desserts, many=True)
+
+        return Response({
+            'plats': plats_serializer.data,
+            'desserts': desserts_serializer.data
+        })
+
+class PasserCommandeAPIView(generics.CreateAPIView):
+    serializer_class = CommandeSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, adresse=self.request.user.adresse)

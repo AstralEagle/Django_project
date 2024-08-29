@@ -1,6 +1,8 @@
 from django.db import models
 from django.db import models
 from django.utils import timezone
+from accounts.models import Adresse
+from django.conf import settings
 
 class PlatDisponible(models.Model):
     nom = models.CharField(max_length=200)
@@ -49,3 +51,25 @@ class MenuDuJour(models.Model):
 
     def __str__(self):
         return f"Menu du {self.date}"
+    
+class Commande(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    adresse = models.ForeignKey('accounts.Adresse', on_delete=models.CASCADE)
+    plats = models.ManyToManyField(PlatDisponible, through='CommandePlat')
+    desserts = models.ManyToManyField(DessertDisponible, through='CommandeDessert')
+    date_commande = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=6, decimal_places=2, default=0)  # Nouveau champ total
+    frais_livraison = models.DecimalField(max_digits=4, decimal_places=2, default=0)  # Nouveau champ frais_livraison
+
+    def __str__(self):
+        return f"Commande {self.id} par {self.user.email} le {self.date_commande}"
+
+class CommandePlat(models.Model):
+    commande = models.ForeignKey(Commande, on_delete=models.CASCADE)
+    plat = models.ForeignKey('menu.PlatDisponible', on_delete=models.CASCADE)
+    quantite = models.PositiveIntegerField()
+
+class CommandeDessert(models.Model):
+    commande = models.ForeignKey(Commande, on_delete=models.CASCADE)
+    dessert = models.ForeignKey('menu.DessertDisponible', on_delete=models.CASCADE)
+    quantite = models.PositiveIntegerField()

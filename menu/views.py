@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import PlatDisponible, DessertDisponible, MenuDuJour
 import random
 from django.utils import timezone
 from django.db import models
+from .models import Commande, CommandePlat, CommandeDessert
+from .forms import CommandePlatForm, CommandeDessertForm
 
 def deux_plats_du_jour(request):
     plats_disponibles = list(PlatDisponible.objects.all())
@@ -25,32 +27,100 @@ def menu_du_jour(request):
 
 def menu_du_jour(request):
     today = timezone.now().date()
-    yesterday = today - timezone.timedelta(days=1)
 
-    # Vérifier si le menu du jour existe déjà
-    try:
-        menu_du_jour = MenuDuJour.objects.get(date=today)
-    except MenuDuJour.DoesNotExist:
-        # Obtenir le menu d'hier s'il existe
-        try:
-            yesterday_menu = MenuDuJour.objects.get(date=yesterday)
-            plats_exclus = yesterday_menu.plats.all()
-            desserts_exclus = yesterday_menu.desserts.all()
-        except MenuDuJour.DoesNotExist:
-            plats_exclus = PlatDisponible.objects.none()
-            desserts_exclus = DessertDisponible.objects.none()
+    # Vérifier si un menu du jour existe déjà pour aujourd'hui
+    menu_du_jour = MenuDuJour.objects.filter(date=today).first()
 
-        # Sélectionner des plats et desserts aléatoires en excluant ceux d'hier
-        plats_disponibles = PlatDisponible.objects.exclude(id__in=plats_exclus)
-        desserts_disponibles = DessertDisponible.objects.exclude(id__in=desserts_exclus)
-
-        deux_plats = random.sample(list(plats_disponibles), 2) if len(plats_disponibles) >= 2 else plats_disponibles
-        deux_desserts = random.sample(list(desserts_disponibles), 2) if len(desserts_disponibles) >= 2 else desserts_disponibles
-
-        # Créer et enregistrer le nouveau menu du jour
+    if not menu_du_jour:
+        plats_disponibles = list(PlatDisponible.objects.all())
+        desserts_disponibles = list(DessertDisponible.objects.all())
+        
+        if len(plats_disponibles) < 2 or len(desserts_disponibles) < 2:
+            return render(request, 'menu/menu_du_jour.html', {'deux_plats': [], 'deux_desserts': [], 'total': 0, 'frais_livraison': 0})
+        
+        deux_plats = random.sample(plats_disponibles, 2)
+        deux_desserts = random.sample(desserts_disponibles, 2)
+        
         menu_du_jour = MenuDuJour.objects.create(date=today)
         menu_du_jour.plats.set(deux_plats)
         menu_du_jour.desserts.set(deux_desserts)
         menu_du_jour.save()
 
-    return render(request, 'menu/menu_du_jour.html', {'deux_plats': menu_du_jour.plats.all(), 'deux_desserts': menu_du_jour.desserts.all()})
+    deux_plats = menu_du_jour.plats.all()
+    deux_desserts = menu_du_jour.desserts.all()
+
+    total = 0
+    frais_livraison = 0
+
+    if request.method == 'POST':
+        commande = Commande.objects.create(user=request.user, adresse=request.user.adresse)
+
+        for plat in deux_plats:
+            quantite = int(request.POST.get(f'plat_{plat.id}', 0))
+            if quantite > 0:
+                CommandePlat.objects.create(commande=commande, plat=plat, quantite=quantite)
+                total += plat.prix * quantite
+
+        for dessert in deux_desserts:
+            quantite = int(request.POST.get(f'dessert_{dessert.id}', 0))
+            if quantite > 0:
+                CommandeDessert.objects.create(commande=commande, dessert=dessert, quantite=quantite)
+                total += dessert.prix * quantite
+
+        if total < 20:
+            frais_livraison = 3
+        total += frais_livraison
+
+        commande.total = total
+        commande.frais_livraison = frais_livraison
+        commande.save()
+
+        return redirect('confirmation_commande')
+
+    return render(request, 'menu/menu_du_jour.html', {
+        'deux_plats': deux_plats,
+        'deux_desserts': deux_desserts,
+        'total': total,
+        'frais_livraison': frais_livraison
+    })
+
+def passer_commande(request):
+    plats = PlatDisponible.objects.all()
+    desserts = DessertDisponible.objects.all()
+    total = 0
+    frais_livraison = 0
+
+    if request.method == 'POST':
+        commande = Commande.objects.create(user=request.user, adresse=request.user.adresse)
+        
+        for plat in plats:
+            quantite = int(request.POST.get(f'plat_{plat.id}', 0))
+            if quantite > 0:
+                CommandePlat.objects.create(commande=commande, plat=plat, quantite=quantite)
+                total += plat.prix * quantite
+        
+        for dessert in desserts:
+            quantite = int(request.POST.get(f'dessert_{dessert.id}', 0))
+            if quantite > 0:
+                CommandeDessert.objects.create(commande=commande, dessert=dessert, quantite=quantite)
+                total += dessert.prix * quantite
+        
+        if total < 20:
+            frais_livraison = 3
+        total += frais_livraison
+
+        commande.total = total  # Ajoutez un champ total dans le modèle Commande si nécessaire
+        commande.frais_livraison = frais_livraison  # Ajoutez un champ frais_livraison si nécessaire
+        commande.save()
+
+        return redirect('confirmation_commande')
+
+    return render(request, 'menu/passer_commande.html', {
+        'plats': plats,
+        'desserts': desserts,
+        'total': total,
+        'frais_livraison': frais_livraison
+    })
+
+def confirmation_commande(request):
+    return render(request, 'menu/confirmation_commande.html')

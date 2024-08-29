@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Passer une commande</title>
+</head>
+<body>
+    <h2>Passer une commande</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <h3>Plats</h3>
+        <ul>
+        {% for plat in plats %}
+            <li>
+                <h4>{{ plat.nom }} - {{ plat.prix }}€</h4>
+                <label for="plat_{{ plat.id }}">Quantité:</label>
+                <input type="number" name="plat_{{ plat.id }}" min="0" value="0">
+            </li>
+        {% endfor %}
+        </ul>
+
+        <h3>Desserts</h3>
+        <ul>
+        {% for dessert in desserts %}
+            <li>
+                <h4>{{ dessert.nom }} - {{ dessert.prix }}€</h4>
+                <label for="dessert_{{ dessert.id }}">Quantité:</label>
+                <input type="number" name="dessert_{{ dessert.id }}" min="0" value="0">
+            </li>
+        {% endfor %}
+        </ul>
+
+        <h3>Total: {{ total }}€</h3>
+        {% if frais_livraison > 0 %}
+            <p>Frais de livraison: {{ frais_livraison }}€ (Gratuit pour les commandes de 20€ ou plus)</p>
+        {% endif %}
+        <button type="submit">Passer commande</button>
+    </form>
+</body>
+</html>

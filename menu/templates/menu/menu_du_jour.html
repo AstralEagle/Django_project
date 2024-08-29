@@ -6,33 +6,48 @@
 <body>
     <h1>Menu du Jour</h1>
 
-    <h2>Plats</h2>
-    <ul>
-    {% for plat in deux_plats %}
-        <li>
-            <h3>{{ plat.nom }} - {{ plat.prix }}€</h3>
-            <p>{{ plat.description }}</p>
-            <p><strong>Cuisine:</strong> {{ plat.cuisine }}</p>
-            <p><strong>Course:</strong> {{ plat.course }}</p>
-            <p><strong>Diet:</strong> {{ plat.diet }}</p>
-            <p><strong>Prep Time:</strong> {{ plat.prep_time }}</p>
-            <p><strong>Ingredients:</strong> {{ plat.ingredients }}</p>
-            <p><strong>Instructions:</strong> {{ plat.instructions }}</p>
-            <img src="{{ plat.image_url }}" alt="{{ plat.nom }}" style="max-width: 400px;">
-        </li>
-    {% endfor %}
-    </ul>
+    <form method="POST">
+        {% csrf_token %}
+        
+        <h2>Plats</h2>
+        <ul>
+        {% if deux_plats %}
+            {% for plat in deux_plats %}
+            <li>
+                <h3>{{ plat.nom }} - {{ plat.prix }}€</h3>
+                <p>{{ plat.description }}</p>
+                <img src="{{ plat.image_url }}" alt="{{ plat.nom }}" style="max-width: 400px;"/>
+                <label for="plat_{{ plat.id }}">Quantité:</label>
+                <input type="number" name="plat_{{ plat.id }}" min="0" value="0">
+            </li>
+            {% endfor %}
+        {% else %}
+            <li>Aucun plat disponible aujourd'hui.</li>
+        {% endif %}
+        </ul>
 
-    <h2>Desserts</h2>
-    <ul>
-    {% for dessert in deux_desserts %}
-        <li>
-            <h3>{{ dessert.nom }} - {{ dessert.prix }}€</h3>
-            <p><strong>Flavors:</strong> {{ dessert.flavors }}</p>
-            <p><strong>Rating:</strong> {{ dessert.rating }}</p>
-            <p><strong>Success Rate:</strong> {{ dessert.success }}</p>
-        </li>
-    {% endfor %}
-    </ul>
+        <h2>Desserts</h2>
+        <ul>
+        {% if deux_desserts %}
+            {% for dessert in deux_desserts %}
+            <li>
+                <h3>{{ dessert.nom }} - {{ dessert.prix }}€</h3>
+                <p>{{ dessert.description }}</p>
+                <label for="dessert_{{ dessert.id }}">Quantité:</label>
+                <input type="number" name="dessert_{{ dessert.id }}" min="0" value="0">
+            </li>
+            {% endfor %}
+        {% else %}
+            <li>Aucun dessert disponible aujourd'hui.</li>
+        {% endif %}
+        </ul>
+
+        <h3>Total: {{ total }}€</h3>
+        {% if frais_livraison > 0 %}
+            <p>Frais de livraison: {{ frais_livraison }}€ (Gratuit pour les commandes de 20€ ou plus)</p>
+        {% endif %}
+        
+        <button type="submit">Passer commande</button>
+    </form>
 </body>
 </html>

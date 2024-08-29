@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ajout d'Adresse</title>
+</head>
+<body>
+    <h2>Ajouter votre adresse</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Enregistrer l'adresse</button>
+    </form>
+</body>
+</html>

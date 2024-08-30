@@ -11,8 +11,8 @@ const useMenus = () => {
         (async () => {
             try {
                 const response = await axios.get("http://localhost:8000/api/menu-du-jour/")
-                await setMenus(response.data.plats.map(x => ({id: x.id, name: x.nom, price: x.prix, image: x.image_url})));
-                await setDesserts(response.data.plats.map(x => ({id: x.id, name: x.nom, price: x.prix, image: defaultImage})));
+                await setMenus(response.data.plats.map(x => ({id: x.id, name: x.nom, price: parseInt(x.prix), image: x.image_url})));
+                await setDesserts(response.data.desserts.map(x => ({id: x.id, name: x.nom, price: parseInt(x.prix), image: defaultImage})));
             }
             catch(e) {
                 console.error(e)

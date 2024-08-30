@@ -3,16 +3,19 @@ import {Box, Button, TextField, Typography} from "@mui/material";
 import backgroundImage from '/background.webp'
 import useLocalisation from "../hook/useLocalisation.js";
 import {useNavigate} from "react-router-dom";
+import {useSnackbar} from "notistack";
 
 function Index() {
+    const { enqueueSnackbar } = useSnackbar()
+
     const navigate = useNavigate()
     const {adress, setAdress, verifAdress} = useLocalisation()
 
-    const handleClickGoToMenu = () => {
-        if (verifAdress())
+    const handleClickGoToMenu = async () => {
+        if (await verifAdress())
             navigate("/menu")
         else
-            alert("Vous vous trouvez trop loin de notre QG")
+            enqueueSnackbar("Vous vous trouvez trop loin de notre QG",{variant: "error"})
     }
 
     return (

@@ -1,5 +1,5 @@
 pip install geopy
-pip install django djangorestframework
+pip install django djangorestframework django-cors-headers
 
 
 1-settting bdd

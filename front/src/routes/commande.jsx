@@ -18,7 +18,7 @@ function Commande() {
     }, []);
 
     return (
-        <Box className="py-2">
+        <Box className="py-2 flex flex-col gap-2">
             {commandes.map((commande, i) => (
                 <Box
                     key={i}
